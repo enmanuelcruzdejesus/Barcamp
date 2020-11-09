@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class SurveyController {
     private SurveyService service;
 
     @RequestMapping(path="survey/getAll",method = RequestMethod.GET)
-    public ResponseEntity<List<Survey>> getProducts(){
+    public ResponseEntity<List<Survey>> getProducts(HttpSession session){
 
         List<Survey> surveys = new ArrayList<Survey>();
 
