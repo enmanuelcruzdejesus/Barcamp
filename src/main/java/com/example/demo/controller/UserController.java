@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,40 @@ public class UserController {
     @Autowired
     private UserService service;
 
+    @Value("${server.port}")
+    private int puerto;
+
+    @GetMapping(path = "/ejemplo-peticion")
+    public String pruebaPeticion(){
+        return "<h3>Spring Boot - Servidor escuchando en el puerto: "+puerto+"</h3>";
+    }
+
+    @GetMapping(path = "/contador-sesion")
+    public String contadorSesion(HttpSession session){
+
+        //
+       // return String.format("<h3>Spring Boot - Usted ha visitado %d veces - Puerto: %d - ID Sesion: %s </h3>", contador, puerto, idSesion);
+        return "";
+    }
+
 
     @GetMapping("/")
     public String home(Model model, HttpSession session){
-
+        Integer contador = (Integer) session.getAttribute("contador");
+        if(contador == null){
+            contador = 0;
+        }
+        contador++;
+        session.setAttribute("contador", contador);
+        //
+        String idSesion = session.getId();
 
         User user = (User) session.getAttribute("user");
 
         model.addAttribute("user",user);
         model.addAttribute("sessionId",session.getId());
+        model.addAttribute("contador",contador);
+        model.addAttribute("puerto",puerto);
         return "index";
     }
 

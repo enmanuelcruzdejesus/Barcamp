@@ -2,8 +2,9 @@
 version: '3.7'
 #Bloque de servicios, indica los contenedores a utilizar.
 services:
-  redis:
+  redis-server:
     image: "redis:alpine"
+    hostname: redis
     ports:
       - "6379:6379"
     networks:
@@ -17,17 +18,17 @@ services:
       - spring.datasource.url=jdbc:mysql://base-datos-app-web:3306/Barcampdb
       - spring.datasource.username=root
       - spring.datasource.password=entrada01
-      - spring.redis.port=6379
+      - spring.session.host=redis-server
+
     networks:    #red para conectar los equipos.
       - my-network
     volumes:
       - my-vol:/tmp/
     depends_on:   #indica que primero debe subir los servicios indicados.
       - base-datos-app-web
-      - redis
 
   base-datos-app-web:
-    image: mysql:5.7.26
+    image: mysql
     ports:
       - 33006:3306
     environment:
