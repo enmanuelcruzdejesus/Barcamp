@@ -8,6 +8,8 @@ public class BarcampApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BarcampApplication.class, args);
+
+
 	}
 
 }

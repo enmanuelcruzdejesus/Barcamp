@@ -2,15 +2,17 @@
 version: '3.7'
 #Bloque de servicios, indica los contenedores a utilizar.
 services:
-  redis-server:
+  redis:
     image: "redis:alpine"
+    container_name: redis
     hostname: redis
+    command: [ "redis-server", "--protected-mode", "no" ]
     ports:
-      - "6379:6379"
+      - 6379:6379
     networks:
       - my-network
 
-  app-web:       #nombre del servicio
+  app-web1:       #nombre del servicio
     image: enmanuelcruzdejesus/barcamp-app-docker #imagen utilizada.
     ports:          #puertos que estaran expuestos.
       - 8080:8080
@@ -18,7 +20,7 @@ services:
       - spring.datasource.url=jdbc:mysql://base-datos-app-web:3306/Barcampdb
       - spring.datasource.username=root
       - spring.datasource.password=entrada01
-      - spring.session.host=redis-server
+      - spring.redis.host=redis
 
     networks:    #red para conectar los equipos.
       - my-network
@@ -26,6 +28,45 @@ services:
       - my-vol:/tmp/
     depends_on:   #indica que primero debe subir los servicios indicados.
       - base-datos-app-web
+      - redis
+
+  app-web2: #nombre del servicio
+    image: enmanuelcruzdejesus/barcamp-app-docker #imagen utilizada.
+    ports: #puertos que estaran expuestos.
+      - 8081:8080
+    environment: #variable de ambiente
+      - spring.datasource.url=jdbc:mysql://base-datos-app-web:3306/Barcampdb
+      - spring.datasource.username=root
+      - spring.datasource.password=entrada01
+      - spring.redis.host=redis
+
+    networks: #red para conectar los equipos.
+      - my-network
+    volumes:
+      - my-vol:/tmp/
+    depends_on: #indica que primero debe subir los servicios indicados.
+      - base-datos-app-web
+      - redis
+
+  app-web3: #nombre del servicio
+    image: enmanuelcruzdejesus/barcamp-app-docker #imagen utilizada.
+    ports: #puertos que estaran expuestos.
+      - 8082:8080
+    environment: #variable de ambiente
+      - spring.datasource.url=jdbc:mysql://base-datos-app-web:3306/Barcampdb
+      - spring.datasource.username=root
+      - spring.datasource.password=entrada01
+      - spring.redis.host=redis
+
+    networks: #red para conectar los equipos.
+      - my-network
+    volumes:
+      - my-vol:/tmp/
+    depends_on: #indica que primero debe subir los servicios indicados.
+      - base-datos-app-web
+      - redis
+
+
 
   base-datos-app-web:
     image: mysql
@@ -45,12 +86,21 @@ services:
     image: enmanuelcruzdejesus/barcamp-front
     container_name: angular
     ports:
-      - 80:80
+      - 80:90
     depends_on:
-      - app-web
+      - app-web1
     networks:
       - my-network
 
+#  haproxy:
+#   image: tutum/haproxy:0.2
+#   ports:
+#    - 90:80
+#    - 1936:1936
+#   depends_on:
+#    - app-web1
+#    - app-web2
+#    - app-web3
 
 
 
